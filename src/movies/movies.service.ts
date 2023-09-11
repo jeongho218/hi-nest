@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Movie } from './entities/movie.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 // 서비스는 로직을 관리하는 역할을 가진다.
 // 한 개의 요소는 반드시 한 가지 기능은 책임져야 한다.
@@ -35,7 +36,7 @@ export class MoviesService {
     });
   }
 
-  update(id: number, updateData) {
+  update(id: number, updateData: UpdateMovieDto) {
     const movie = this.getOne(id); // 영화 ID로 검색, 존재하지 않는다면 에러처리
     this.deleteOne(id); // 기존에 존재하던 영화 정보를 삭제
     this.movies.push({ ...movie, ...updateData }); // 같은 영화 ID에 업데이트 정보를 삽입
