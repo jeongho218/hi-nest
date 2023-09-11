@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { Movie } from './entities/movie.entity';
+import { CreateMovieDto } from './dto/create-movie.dto';
 
 @Controller('movies') // "localhost:3000/movies"
 export class MoviesController {
@@ -20,25 +21,27 @@ export class MoviesController {
   }
 
   @Get('/:id') // "localhost:3000/movies/..."
-  getOne(@Param('id') movieId: string): Movie {
+  getOne(@Param('id') movieId: number): Movie {
     // 파라미터 등의 요청사항(req)은 함수의 ()안에 들어간다.
-    // 파라미터 "id"를 매개변수 "movieId"에 저장하며, 데이터 타입은 string이다.
+    console.log(typeof movieId);
     return this.moviesService.getOne(movieId);
   }
 
   @Post()
-  create(@Body() movieData) {
+  create(@Body() movieData: CreateMovieDto) {
     // Body에 담긴 내용을 변수 movieData에 할당한다.
+    // 유효성 검사를 위한 DTO 설정
+    // 영화를 생성할때는 title, year, genres만 보내도록 설정
     return this.moviesService.create(movieData);
   }
 
   @Delete('/:id')
-  remove(@Param('id') movieId: string) {
+  remove(@Param('id') movieId: number) {
     return this.moviesService.deleteOne(movieId);
   }
 
   @Patch('/:id')
-  patch(@Param('id') movieId: string, @Body() updateData) {
+  patch(@Param('id') movieId: number, @Body() updateData) {
     return this.moviesService.update(movieId, updateData);
   }
 }
