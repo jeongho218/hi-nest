@@ -78,6 +78,7 @@ describe('MoviesService', () => {
     it('should create a movie', () => {
       const beforeCreate = service.getAll().length;
       service.create({
+        // 영화 생성
         title: 'test movie',
         genres: ['test'],
         year: 2023,
@@ -85,6 +86,27 @@ describe('MoviesService', () => {
       const afterCreate = service.getAll().length;
       console.log(beforeCreate, afterCreate);
       expect(afterCreate).toBeGreaterThan(beforeCreate);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a movie', () => {
+      // 테스트 용 영화 생성
+      service.create({
+        title: 'test movie',
+        genres: ['test'],
+        year: 2023,
+      });
+      service.update(1, { title: 'Updated Test' }); // ID가 1인 영화의 title을 "Updated Test"로 변경
+      const movie = service.getOne(1);
+      expect(movie.title).toEqual('Updated Test');
+    });
+    it('should throw a NotFoundException', () => {
+      try {
+        service.update(999, {});
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
     });
   });
 });
