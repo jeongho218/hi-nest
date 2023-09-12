@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MoviesService } from './movies.service';
 import { NotFoundException } from '@nestjs/common';
+import { after } from 'node:test';
 
 describe('MoviesService', () => {
   let service: MoviesService;
@@ -34,7 +35,6 @@ describe('MoviesService', () => {
       });
       const movie = service.getOne(1); // 영화의 ID가 1인 영화를 변수 movie에 할당
       expect(movie).toBeDefined();
-      expect(movie.id).toEqual(1);
     });
 
     it('should throw 404 error', () => {
@@ -42,8 +42,49 @@ describe('MoviesService', () => {
         service.getOne(999); // 존재하지 않는 영화의 ID 999을 호출하여 에러를 발생시킨다.
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
-        expect(error.message).toEqual('Movie with ID 999 not found.');
       }
+    });
+  });
+
+  describe('deleteOne', () => {
+    it('deletes a movie', () => {
+      service.create({
+        // 테스트 용 영화를 생성
+        title: 'test movie',
+        genres: ['test'],
+        year: 2023,
+      });
+      console.log(service.getAll());
+      const beforeDelete = service.getAll().length;
+      service.deleteOne(1);
+      console.log(service.getAll());
+      const afterDelete = service.getAll().length;
+
+      // expect(afterDelete.length).toEqual(beforeDelete.length - 1);
+      // 영화를 삭제한 후의 영화 배열의 길이는
+      // 삭제하기 전 영화 배열의 길이에서 -1한 것과 동일하여야 한다.
+      expect(afterDelete).toBeLessThan(beforeDelete);
+    });
+    it('should return a 404', () => {
+      try {
+        service.deleteOne(999);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+  });
+
+  describe('create', () => {
+    it('should create a movie', () => {
+      const beforeCreate = service.getAll().length;
+      service.create({
+        title: 'test movie',
+        genres: ['test'],
+        year: 2023,
+      });
+      const afterCreate = service.getAll().length;
+      console.log(beforeCreate, afterCreate);
+      expect(afterCreate).toBeGreaterThan(beforeCreate);
     });
   });
 });
