@@ -49,12 +49,22 @@ describe('AppController (e2e)', () => {
         .expect(200)
         .expect([]);
     });
-    it('POST', () => {
+    it('POST 201', () => {
+      // 정상적인 요청 테스트
       return request(app.getHttpServer())
         .post('/movies')
         .send({ title: 'Test', year: 2023, genres: ['test'] })
         .expect(201);
     });
+    it('POST 400', () => {
+      // 잘못된 요청 테스트
+      return request(app.getHttpServer())
+        .post('/movies')
+        .send({ title: 'Test', year: 2023, genres: ['test'], wrong: 'thing' })
+        .expect(400);
+    });
+    // validationPipe의 forbidNonWhitelisted 화이트 리스트에 의해
+    // 허가받지 않은 리퀘스트는 차단된다.
     it('DELETE', () => {
       return request(app.getHttpServer()).delete('/movies').expect(404);
     });
@@ -67,7 +77,14 @@ describe('AppController (e2e)', () => {
     it('GET 404', () => {
       return request(app.getHttpServer()).get('/movies/999').expect(404);
     });
-    it.todo('DELETE');
-    it.todo('PATCH');
+    it('PATCH 200', () => {
+      return request(app.getHttpServer())
+        .patch('/movies/1')
+        .send({ title: 'Updated Test' })
+        .expect(200);
+    });
+    it('DELETE 200', () => {
+      return request(app.getHttpServer()).delete('/movies/1').expect(200);
+    });
   });
 });
